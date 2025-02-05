@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+      #news-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .news-card {
+            display: flex;
+            flex-direction: row;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin: 16px;
+            padding: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            flex: 1 1 calc(50% - 90px);
+        }
+        .news-card img {
+            max-width: 150px;
+            max-height: 150px;
+            margin-right: 16px;
+            border-radius: 8px;
+        }
+        .news-info {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+<h2>News Articles</h2>
+<div id="news-container"></div>
+    <script>
+        const newsContainer = document.getElementById("news-container");
+        const numNews = 6;
+        const apiKey = '07e23bfab1344fd1be93495e68dace59';
+        const url = `https://newsapi.org/v2/top-headlines?country=us&category=business&apiKey=${apiKey}`;
+
+        fetch(url)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                return response.json();
+            })
+            .then((data) => {
+                const articles = data.articles;
+                for (let i = 0; i < Math.min(numNews, articles.length); i++) {
+                    const article = articles[i];
+
+                    const newsCard = document.createElement("div");
+                    newsCard.classList.add("news-card");
+
+                    const newsImage = document.createElement("img");
+                    newsImage.src = article.urlToImage || "https://via.placeholder.com/150";
+                    newsImage.alt = article.title;
+
+                    const newsInfo = document.createElement("div");
+                    newsInfo.classList.add("news-info");
+
+                    const newsTitle = document.createElement("h2");
+                    newsTitle.textContent = article.title;
+
+                    const newsDescription = document.createElement("p");
+                    newsDescription.textContent = article.description || "No description available.";
+
+                    const newsLink = document.createElement("a");
+                    newsLink.href = article.url;
+                    newsLink.textContent = "Read more";
+                    newsLink.target = "_blank";
+
+                    newsInfo.appendChild(newsTitle);
+                    newsInfo.appendChild(newsDescription);
+                    newsInfo.appendChild(newsLink);
+
+                    newsCard.appendChild(newsImage);
+                    newsCard.appendChild(newsInfo);
+
+                    newsContainer.appendChild(newsCard);
+                }
+            })
+            .catch((error) => console.error("Error fetching news data:", error));
+    </script>
+</body>
+</html>
